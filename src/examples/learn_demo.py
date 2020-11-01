@@ -14,10 +14,8 @@ from src.learn_diffeomorphism.utils import linear_map
 
 torch.manual_seed(1)
 
-if torch.cuda.is_available():
-    device = torch.device('cuda')
-else:
-    device = torch.device('cpu')
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda" if use_cuda else "cpu")
 
 data = np.loadtxt("data/Angle.csv")
 
@@ -33,8 +31,8 @@ pos[:, 0] = linear_map(pos[:, 0], np.min(pos[:, 0]),
 pos[:, 1] = linear_map(pos[:, 1], np.min(pos[:, 1]),
                        np.max(pos[:, 1]), lower, upper)
 
-plt.scatter(pos[:, 0], pos[:, 1])
-plt.show()
+# plt.scatter(pos[:, 0], pos[:, 1])
+# plt.show()
 
 pos = torch.from_numpy(pos).float().to(device)
 vel = torch.from_numpy(vel).float().to(device)
@@ -54,7 +52,7 @@ loss_func = nn.MSELoss()
 
 # Batch and number of epochs
 BATCH_SIZE = 100
-EPOCH = 100
+EPOCH = 1
 
 # Create dataset
 torch_dataset = Data.TensorDataset(pos, vel)
@@ -72,7 +70,8 @@ for epoch in range(EPOCH):
         b_x = Variable(batch_x)
         b_y = Variable(batch_y)
 
-        prediction = ds.forward(b_x)     # input x and predict based on x
+        # input x and predict based on x
+        prediction = ds.forward(b_x)
 
         # must be (1. nn output, 2. target)
         loss = loss_func(prediction, b_y)
