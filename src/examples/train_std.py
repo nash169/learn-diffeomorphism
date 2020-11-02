@@ -7,7 +7,6 @@ import torch.utils.data as Data
 import numpy as np
 import matplotlib.pyplot as plt
 
-from torch.autograd import Variable
 from src.learn_diffeomorphism import Dynamics
 from src.learn_diffeomorphism.utils import linear_map
 
@@ -35,8 +34,18 @@ pos[:, 1] = linear_map(pos[:, 1], np.min(pos[:, 1]),
 # plt.scatter(pos[:, 0], pos[:, 1])
 # plt.show()
 
+# Convert data
 pos = torch.from_numpy(pos).float().to(device)
 vel = torch.from_numpy(vel).float().to(device)
+
+# mu, std = pos.mean(), pos.std()
+# pos.sub_(mu).div_(std)
+pos.requires_grad = True
+
+# Shuffle data
+idx = torch.randperm(pos.size(0))
+pos = pos[idx, :]
+vel = vel[idx, :]
 
 dim = pos.size(1)
 fourier_features = 200
@@ -52,34 +61,29 @@ optimizer = optim.Adam(ds.parameters(), lr=1e-4,  weight_decay=1e-8)
 loss_func = nn.MSELoss()
 
 # Batch and number of epochs
-BATCH_SIZE = 200
+BATCH_SIZE = 100
 EPOCH = 10
-
-# Create dataset
-torch_dataset = Data.TensorDataset(pos, vel)
-
-loader = Data.DataLoader(
-    dataset=torch_dataset,
-    batch_size=BATCH_SIZE,
-    shuffle=True,
-    num_workers=0
-)
 
 # start training
 for epoch in range(EPOCH):
     print("EPOCH: ", epoch)
-    for step, (batch_x, batch_y) in enumerate(loader):  # for each training step
-        b_x = Variable(batch_x, requires_grad=True)
-        b_y = Variable(batch_y)
+    for batch in range(0, pos.size(0), BATCH_SIZE):  # for each training step
+        x = pos.narrow(0, batch, BATCH_SIZE)
+        y = vel.narrow(0, batch, BATCH_SIZE)
 
         # input x and predict based on x
-        prediction = ds(b_x)
+        prediction = ds(x)
 
         # must be (1. nn output, 2. target)
-        loss = loss_func(prediction, b_y)
+        loss = loss_func(prediction, y)
 
         print(loss)
 
-        optimizer.zero_grad()   # clear gradients for next train
-        loss.backward()         # backpropagation, compute gradients
-        optimizer.step()        # apply gradients
+        # clear gradients for next train
+        optimizer.zero_grad()
+
+        # backpropagation, compute gradients
+        loss.backward(retain_graph=True)
+
+        # apply gradients
+        optimizer.step()

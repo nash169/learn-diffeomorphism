@@ -39,7 +39,7 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 # print(jacobian(net, test_point))
 
-test_point = torch.rand(5, 5, requires_grad=True).to(device)
+test_point = torch.rand(1, 2, requires_grad=True).to(device)
 
 
 # def test_fun(x):
@@ -51,7 +51,7 @@ test_point = torch.rand(5, 5, requires_grad=True).to(device)
 
 # jac = jacobian(test_fun, test_point).sum(2)
 
-net = Dynamics(5, 10, 3)
+net = KernelMachine(2, 10, 1)
 
 out1 = net.forward(test_point)
 
