@@ -52,7 +52,7 @@ loss_func = nn.MSELoss()
 
 # Batch and number of epochs
 BATCH_SIZE = 100
-EPOCH = 1
+EPOCH = 10
 
 # Create dataset
 torch_dataset = Data.TensorDataset(pos, vel)
@@ -66,6 +66,7 @@ loader = Data.DataLoader(
 
 # start training
 for epoch in range(EPOCH):
+    print("EPOCH: ", epoch)
     for step, (batch_x, batch_y) in enumerate(loader):  # for each training step
         b_x = Variable(batch_x)
         b_y = Variable(batch_y)

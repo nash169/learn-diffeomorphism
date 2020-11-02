@@ -5,6 +5,7 @@ import torch.nn as nn
 
 from torch.autograd.functional import jacobian
 from .diffeomorphism import Diffeomorphism
+from src.learn_diffeomorphism.utils import blk_matrix
 
 
 use_cuda = torch.cuda.is_available()
@@ -21,19 +22,8 @@ class Dynamics(nn.Module):
             dim, num_features, num_diff,  length)
 
     def forward(self, x):
-        result = torch.empty_like(x)
+        jac = blk_matrix(jacobian(self.diffeomorphism_, x).sum(
+            2).reshape(x.size(0)*self.dim_, self.dim_, 1).squeeze(2))
 
-        y = self.diffeomorphism_(x)
-
-        jac = jacobian(self.diffeomorphism_, x)
-
-        J = torch.empty(self.dim_, self.dim_).to(device)
-
-        for i in range(x.size(0)):
-            for j in range(x.size(1)):
-                J[j, :] = jac[i, j, i]
-
-            G = torch.mm(J, J)
-            result[i, :] = -torch.mv(torch.inverse(G), y[i, :])
-
-        return result
+        return -torch.mv(torch.inverse(torch.sparse.mm(jac.transpose(
+            1, 0), jac.to_dense())), self.diffeomorphism_(x).reshape(-1, 1).squeeze(1)).reshape(-1, self.dim_)
