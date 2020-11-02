@@ -68,7 +68,7 @@ loader = Data.DataLoader(
 for epoch in range(EPOCH):
     print("EPOCH: ", epoch)
     for step, (batch_x, batch_y) in enumerate(loader):  # for each training step
-        b_x = Variable(batch_x)
+        b_x = Variable(batch_x, requires_grad=True)
         b_y = Variable(batch_y)
 
         # input x and predict based on x

@@ -5,6 +5,7 @@ import torch.nn as nn
 import numpy as np
 
 from .kernel_machine import KernelMachine
+from time import time
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")

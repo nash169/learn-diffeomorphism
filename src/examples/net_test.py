@@ -39,23 +39,19 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 # print(jacobian(net, test_point))
 
-test_point = torch.rand(3, 5, requires_grad=True).to(device)
+test_point = torch.rand(5, 5, requires_grad=True).to(device)
 
 
-def test_fun(x):
-    result = torch.empty(x.size(0), 2)
-    result[:, 0] = x[:, 0]*x[:, 1]
-    result[:, 1] = x[:, 0]**2*x[:, 1]
-    return result
+# def test_fun(x):
+#     result = torch.empty(x.size(0), 2)
+#     result[:, 0] = x[:, 0]*x[:, 1]
+#     result[:, 1] = x[:, 0]**2*x[:, 1]
+#     return result
 
 
-# jac = jacobian(test_fun, test_point)
+# jac = jacobian(test_fun, test_point).sum(2)
 
-# v = torch.ones(3, 2)
-
-# test = jvp(test_fun, test_point, v)
-
-net = Dynamics(5, 10, 2)
+net = Dynamics(5, 10, 3)
 
 out1 = net.forward(test_point)
 

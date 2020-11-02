@@ -3,6 +3,7 @@
 # import torch
 import torch.nn as nn
 from .coupling_layer import CouplingLayer
+from time import time
 # import torch.nn.functional as F
 # import torch.optim as optim
 # import torch.utils.data as Data

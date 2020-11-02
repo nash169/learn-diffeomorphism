@@ -7,6 +7,8 @@ from torch.autograd.functional import jacobian
 from .diffeomorphism import Diffeomorphism
 from src.learn_diffeomorphism.utils import blk_matrix
 
+from time import time
+
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
@@ -22,8 +24,30 @@ class Dynamics(nn.Module):
             dim, num_features, num_diff,  length)
 
     def forward(self, x):
-        jac = blk_matrix(jacobian(self.diffeomorphism_, x).sum(
-            2).reshape(x.size(0)*self.dim_, self.dim_, 1).squeeze(2))
+        # jac = blk_matrix(jacobian(self.diffeomorphism_, x).sum(
+        #     2).reshape(x.size(0)*self.dim_, self.dim_, 1).squeeze(2))
 
-        return -torch.mv(torch.inverse(torch.sparse.mm(jac.transpose(
-            1, 0), jac.to_dense())), self.diffeomorphism_(x).reshape(-1, 1).squeeze(1)).reshape(-1, self.dim_)
+        # temp = -torch.mv(torch.inverse(torch.sparse.mm(jac.transpose(
+        #     1, 0), jac.to_dense())), self.diffeomorphism_(x).reshape(-1, 1).squeeze(1)).reshape(-1, self.dim_)
+
+        m = x.size(0)
+        y = self.diffeomorphism_(x)
+
+        # jac = jacobian(self.diffeomorphism_, x).sum(2)
+
+        jac = torch.empty(m*self.dim_, self.dim_).to(device)
+
+        for i in range(self.dim_):
+            grad = torch.autograd.grad(
+                y[:, i], x, grad_outputs=torch.ones_like(y[:, i]), retain_graph=True)[0]
+            jac[:, i] = grad.reshape(1, -1)
+
+        jac = jac.reshape(m, self.dim_, self.dim_).permute(0, 2, 1)
+
+        result = torch.empty(m, self.dim_).to(device)
+
+        for i in range(m):
+            result[i, :] = -torch.mv(torch.inverse(torch.mm(jac[i].transpose(
+                1, 0), jac[i])), y[i, :])
+
+        return result
