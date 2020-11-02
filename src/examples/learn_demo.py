@@ -72,7 +72,7 @@ for epoch in range(EPOCH):
         b_y = Variable(batch_y)
 
         # input x and predict based on x
-        prediction = ds.forward(b_x)
+        prediction = ds(b_x)
 
         # must be (1. nn output, 2. target)
         loss = loss_func(prediction, b_y)
