@@ -9,8 +9,8 @@ from torch.autograd import grad
 from src.learn_diffeomorphism import *
 from src.learn_diffeomorphism.utils import blk_matrix
 
-# use_cuda = torch.cuda.is_available()
-# device = torch.device("cuda" if use_cuda else "cpu")
+use_cuda = torch.cuda.is_available()
+device = torch.device("cuda" if use_cuda else "cpu")
 
 # point = torch.rand(2, 5).to(device)
 
@@ -39,7 +39,7 @@ from src.learn_diffeomorphism.utils import blk_matrix
 
 # print(jacobian(net, test_point))
 
-test_point = torch.rand(3, 5, requires_grad=True)
+test_point = torch.rand(3, 5, requires_grad=True).to(device)
 
 
 def test_fun(x):
