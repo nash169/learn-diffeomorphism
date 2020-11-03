@@ -15,10 +15,12 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 
 class Dynamics(nn.Module):
-    def __init__(self, dim, num_features, num_diff, length=1):
+    def __init__(self, dim, num_features, num_diff, attractor, length=1):
         super(Dynamics, self).__init__()
 
         self.dim_ = dim
+
+        self.attractor_ = attractor.unsqueeze(0)
 
         self.diffeomorphism_ = Diffeomorphism(
             dim, num_features, num_diff,  length)
@@ -30,10 +32,12 @@ class Dynamics(nn.Module):
         # temp = -torch.mv(torch.inverse(torch.sparse.mm(jac.transpose(
         #     1, 0), jac.to_dense())), self.diffeomorphism_(x).reshape(-1, 1).squeeze(1)).reshape(-1, self.dim_)
 
+        # jac = jacobian(self.diffeomorphism_, x).sum(2)
+
         m = x.size(0)
         y = self.diffeomorphism_(x)
 
-        # jac = jacobian(self.diffeomorphism_, x).sum(2)
+        attractor = self.diffeomorphism_(self.attractor_)[0]
 
         jac = torch.empty(m*self.dim_, self.dim_).to(device)
 
@@ -48,6 +52,6 @@ class Dynamics(nn.Module):
 
         for i in range(m):
             result[i, :] = -torch.mv(torch.inverse(torch.mm(jac[i].transpose(
-                1, 0), jac[i])), y[i, :])
+                1, 0), jac[i])), y[i, :]-attractor)
 
         return result

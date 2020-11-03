@@ -43,7 +43,8 @@ fourier_features = 200
 coupling_layers = 10
 kernel_length = 0.45
 
-ds = Dynamics(dim, fourier_features, coupling_layers, kernel_length).to(device)
+ds = Dynamics(dim, fourier_features, coupling_layers,
+              pos[-1, :], kernel_length).to(device)
 
 # Set optimizer
 optimizer = optim.Adam(ds.parameters(), lr=1e-4,  weight_decay=1e-8)
@@ -52,8 +53,8 @@ optimizer = optim.Adam(ds.parameters(), lr=1e-4,  weight_decay=1e-8)
 loss_func = nn.MSELoss()
 
 # Batch and number of epochs
-BATCH_SIZE = 200
-EPOCH = 10
+BATCH_SIZE = pos.size(0)
+EPOCH = 100
 
 # Create dataset
 torch_dataset = Data.TensorDataset(pos, vel)

@@ -16,7 +16,7 @@ torch.manual_seed(1)
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
-data = np.loadtxt("data/Angle.csv")
+data = np.loadtxt("data/GShape.csv")
 
 pos = data[:, 0:2]
 vel = data[:, 2:4]
@@ -52,17 +52,19 @@ fourier_features = 200
 coupling_layers = 10
 kernel_length = 0.45
 
-ds = Dynamics(dim, fourier_features, coupling_layers, kernel_length).to(device)
+ds = Dynamics(dim, fourier_features, coupling_layers,
+              pos[-1, :], kernel_length).to(device)
 
 # Set optimizer
-optimizer = optim.Adam(ds.parameters(), lr=1e-4,  weight_decay=1e-8)
+optimizer = optim.Adam(ds.parameters(), lr=1e-4, weight_decay=1e-8)
+# optimizer = optim.SGD(ds.parameters(), lr=1e-4,  weight_decay=1e-8)
 
 # Set loss function
 loss_func = nn.MSELoss()
 
 # Batch and number of epochs
 BATCH_SIZE = 100
-EPOCH = 10
+EPOCH = 100
 
 # start training
 for epoch in range(EPOCH):

@@ -9,6 +9,8 @@ from torch.autograd import grad
 from src.learn_diffeomorphism import *
 from src.learn_diffeomorphism.utils import blk_matrix
 
+from torch.autograd import gradcheck
+
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
@@ -39,21 +41,35 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 # print(jacobian(net, test_point))
 
-test_point = torch.rand(1, 2, requires_grad=True).to(device)
+# test_point = torch.rand(1, 2, requires_grad=True).to(device)
+
+x = torch.tensor([[0.8147, 0.9058]], requires_grad=True)
+eps = torch.rand(1, 2)*1e-5
 
 
-# def test_fun(x):
-#     result = torch.empty(x.size(0), 2)
-#     result[:, 0] = x[:, 0]*x[:, 1]
-#     result[:, 1] = x[:, 0]**2*x[:, 1]
-#     return result
+def test_fun(x):
+    result = torch.empty(x.size(0), 2)
+    result[:, 0] = x[:, 0]*x[:, 1]
+    result[:, 1] = x[:, 0]**2*x[:, 1]
+    return result
 
 
-# jac = jacobian(test_fun, test_point).sum(2)
+jac = jacobian(test_fun, x)
 
-net = KernelMachine(2, 10, 1)
 
-out1 = net.forward(test_point)
+net = KernelMachine(5, 5, 1, 0.45)
+
+net(torch.rand(3, 5))
+
+diff = test_fun(x + eps) - test_fun(x-eps)
+
+# print(jacobian(net.fourier_features, x))
+
+# print(net(x))
+
+
+# print(torch.dot(net.fourier_features(x).to_dense()[
+#       0][0], net.fourier_features(y).to_dense()[0][0]))
 
 # tensor = test_fun(test_point)
 
