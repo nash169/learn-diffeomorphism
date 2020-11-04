@@ -11,6 +11,8 @@ from src.learn_diffeomorphism.utils import blk_matrix
 
 from torch.autograd import gradcheck
 
+from time import time
+
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
@@ -43,25 +45,39 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 # test_point = torch.rand(1, 2, requires_grad=True).to(device)
 
-x = torch.tensor([[0.8147, 0.9058]], requires_grad=True)
-eps = torch.rand(1, 2)*1e-5
+# x = torch.tensor([[0.8147, 0.9058]], requires_grad=True)
+# eps = torch.rand(1, 2)*1e-5
 
 
-def test_fun(x):
-    result = torch.empty(x.size(0), 2)
-    result[:, 0] = x[:, 0]*x[:, 1]
-    result[:, 1] = x[:, 0]**2*x[:, 1]
-    return result
+# def test_fun(x):
+#     result = torch.empty(x.size(0), 2)
+#     result[:, 0] = x[:, 0]*x[:, 1]
+#     result[:, 1] = x[:, 0]**2*x[:, 1]
+#     return result
 
 
-jac = jacobian(test_fun, x)
+# jac = jacobian(test_fun, x)
+
+dim = 20
+samples = 1
+out = 20
+features = 1000
+
+# x = torch.tensor([[0.8147, 0.9058, 0.5634]], requires_grad=True)
+# y = torch.tensor([[0.8147, 0.9058]], requires_grad=True)
+
+# net = KernelMachine(dim, features, out, 0.45)
+# net = CouplingLayer(dim, features, 0, 0.45)
+net = Diffeomorphism(dim, features, 10, 0.45)
+
+x = torch.rand(samples, dim)
+t0 = time()
+net(x)
+t1 = time()
+print("Time mine: %.2g sec" % (t1 - t0))
 
 
-net = KernelMachine(5, 5, 1, 0.45)
-
-net(torch.rand(3, 5))
-
-diff = test_fun(x + eps) - test_fun(x-eps)
+# diff = test_fun(x + eps) - test_fun(x-eps)
 
 # print(jacobian(net.fourier_features, x))
 

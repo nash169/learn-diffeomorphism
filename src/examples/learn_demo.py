@@ -17,7 +17,7 @@ torch.manual_seed(1)
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
-data = np.loadtxt("data/Angle.csv")
+data = np.loadtxt("data/Leaf_2.csv")
 
 pos = data[:, 0:2]
 vel = data[:, 2:4]
@@ -47,10 +47,10 @@ ds = Dynamics(dim, fourier_features, coupling_layers,
               pos[-1, :], kernel_length).to(device)
 
 # Set optimizer
-optimizer = optim.Adam(ds.parameters(), lr=1e-4,  weight_decay=1e-8)
+optimizer = optim.Adam(ds.parameters(), lr=1e-4,  weight_decay=1e-10)
 
 # Set loss function
-loss_func = nn.MSELoss()
+loss_func = nn.SmoothL1Loss()
 
 # Batch and number of epochs
 BATCH_SIZE = pos.size(0)
@@ -68,7 +68,6 @@ loader = Data.DataLoader(
 
 # start training
 for epoch in range(EPOCH):
-    print("EPOCH: ", epoch)
     for step, (batch_x, batch_y) in enumerate(loader):  # for each training step
         b_x = Variable(batch_x, requires_grad=True)
         b_y = Variable(batch_y)
