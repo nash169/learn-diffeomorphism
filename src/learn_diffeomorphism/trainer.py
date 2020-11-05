@@ -31,7 +31,8 @@ class Trainer:
             shuffle=True,
             print_epoch=False,
             print_loss=True,
-            load_model=False)
+            load_model=False,
+            clip_grad=None)
 
     def options(self, **kwargs):
         for _, option in enumerate(kwargs):
@@ -88,6 +89,11 @@ class Trainer:
 
                 # backpropagation, compute gradients
                 loss.backward()
+
+                # Clip grad if requested
+                if self.options_["clip_gradient"] is not None:
+                    torch.nn.utils.clip_grad_norm_(
+                        self.model.parameters(), self.options_["clip_gradient"])
 
                 # apply gradients
                 self.optimizer.step()

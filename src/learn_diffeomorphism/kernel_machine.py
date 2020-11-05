@@ -34,7 +34,7 @@ class KernelMachine(nn.Module):  # inheriting from nn.Module!
             self.num_features_,  match_dim, bias=False)
 
         # Init weights to zero (identity diffeomorphism)
-        nn.init.zeros_(self.prediction_.weight.data)
+        # nn.init.zeros_(self.prediction_.weight.data)
 
     def fourier_features(self, x):
         return torch.sqrt(torch.tensor(2/self.num_features_))*torch.cos(self.linear_clamped_(x))

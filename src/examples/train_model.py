@@ -31,13 +31,13 @@ trainer = Trainer(net, pos, vel)
 
 # Set trainer optimizer (this is not very clean)
 trainer.optimizer = torch.optim.Adam(
-    trainer.model.parameters(), lr=1e-4,  weight_decay=1e-10)
+    trainer.model.parameters(), lr=1e-4,  weight_decay=1e-8)
 
 # Set trainer loss
 trainer.loss = torch.nn.SmoothL1Loss()
 
 # Set trainer options
-trainer.options(normalize=False, shuffle=True, print_loss=True, epochs=10)
+trainer.options(normalize=False, shuffle=True, print_loss=True, epochs=100)
 
 # Train model
 trainer.train()
