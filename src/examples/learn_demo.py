@@ -32,8 +32,8 @@ pos[:, 0] = linear_map(pos[:, 0], np.min(pos[:, 0]),
 pos[:, 1] = linear_map(pos[:, 1], np.min(pos[:, 1]),
                        np.max(pos[:, 1]), lower, upper)
 
-# plt.scatter(pos[:, 0], pos[:, 1])
-# plt.show()
+plt.scatter(pos[:, 0], pos[:, 1])
+plt.show()
 
 pos = torch.from_numpy(pos).float().to(device)
 vel = torch.from_numpy(vel).float().to(device)

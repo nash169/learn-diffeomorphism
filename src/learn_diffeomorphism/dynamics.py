@@ -3,7 +3,6 @@
 import torch
 import torch.nn as nn
 
-from torch.autograd.functional import jacobian
 from .diffeomorphism import Diffeomorphism
 from src.learn_diffeomorphism.utils import blk_matrix
 
@@ -26,14 +25,6 @@ class Dynamics(nn.Module):
             dim, num_features, num_diff,  length)
 
     def forward(self, x):
-        # jac = blk_matrix(jacobian(self.diffeomorphism_, x).sum(
-        #     2).reshape(x.size(0)*self.dim_, self.dim_, 1).squeeze(2))
-
-        # temp = -torch.mv(torch.inverse(torch.sparse.mm(jac.transpose(
-        #     1, 0), jac.to_dense())), self.diffeomorphism_(x).reshape(-1, 1).squeeze(1)).reshape(-1, self.dim_)
-
-        # jac = jacobian(self.diffeomorphism_, x).sum(2)
-
         m = x.size(0)
         y = self.diffeomorphism_(x)
 

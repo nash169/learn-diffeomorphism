@@ -25,14 +25,15 @@ time = data[:, -2]
 steps = data[:, -1]
 
 # Normalization
-lower, upper = -0.5, 0.5
-pos[:, 0] = linear_map(pos[:, 0], np.min(pos[:, 0]),
-                       np.max(pos[:, 0]), lower, upper)
-pos[:, 1] = linear_map(pos[:, 1], np.min(pos[:, 1]),
-                       np.max(pos[:, 1]), lower, upper)
+# lower, upper = -0.5, 0.5
+# pos[:, 0] = linear_map(pos[:, 0], np.min(pos[:, 0]),
+#                        np.max(pos[:, 0]), lower, upper)
+# pos[:, 1] = linear_map(pos[:, 1], np.min(pos[:, 1]),
+#                        np.max(pos[:, 1]), lower, upper)
+pos = (pos - pos.mean(axis=0)) / pos.std(axis=0)
 
-# plt.scatter(pos[:, 0], pos[:, 1])
-# plt.show()
+plt.scatter(pos[:, 0], pos[:, 1])
+plt.show()
 
 # Convert data
 pos = torch.from_numpy(pos).float().to(device)

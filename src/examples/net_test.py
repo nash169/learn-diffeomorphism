@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import torch
+import numpy as np
 
 from torch.autograd.functional import jacobian
 from torch.autograd.functional import vjp
@@ -16,8 +17,7 @@ from time import time
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
-# point = torch.rand(2, 5).to(device)
-
+# trainer.train()
 # net = KernelMachine(point.size(1), 10, 3).to(device)
 # # net2 = KernelMachineVec(point.size(1), 10, 2).to(device)
 
@@ -58,23 +58,23 @@ device = torch.device("cuda" if use_cuda else "cpu")
 
 # jac = jacobian(test_fun, x)
 
-dim = 20
-samples = 1
-out = 20
-features = 1000
+# dim = 20
+# samples = 1
+# out = 20
+# features = 1000
 
 # x = torch.tensor([[0.8147, 0.9058, 0.5634]], requires_grad=True)
 # y = torch.tensor([[0.8147, 0.9058]], requires_grad=True)
 
 # net = KernelMachine(dim, features, out, 0.45)
 # net = CouplingLayer(dim, features, 0, 0.45)
-net = Diffeomorphism(dim, features, 10, 0.45)
+# net = Diffeomorphism(dim, features, 10, 0.45)
 
-x = torch.rand(samples, dim)
-t0 = time()
-net(x)
-t1 = time()
-print("Time mine: %.2g sec" % (t1 - t0))
+# x = torch.rand(samples, dim)
+# t0 = time()
+# net(x)
+# t1 = time()
+# print("Time mine: %.2g sec" % (t1 - t0))
 
 
 # diff = test_fun(x + eps) - test_fun(x-eps)
