@@ -7,11 +7,6 @@ import numpy as np
 from torch.distributions.multivariate_normal import MultivariateNormal
 from torch.distributions.uniform import Uniform
 
-from time import time
-
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda" if use_cuda else "cpu")
-
 
 class KernelMachine(nn.Module):  # inheriting from nn.Module!
 
