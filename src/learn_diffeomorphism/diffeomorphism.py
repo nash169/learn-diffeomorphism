@@ -20,7 +20,7 @@ class Diffeomorphism(nn.Module):
     def jacobian(self, x):
         y = self.prediction_(x)
 
-        jac = torch.empty(x.size(0)*self.dim_, self.dim_)
+        jac = torch.empty(x.size(0)*self.dim_, self.dim_).to(x.device)
 
         for i in range(self.dim_):
             grad = torch.autograd.grad(
