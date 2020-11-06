@@ -4,7 +4,7 @@ import os
 
 class Trainer:
     __options__ = ['epochs', 'batch', 'normalize',
-                   'shuffle', 'print_epoch', 'print_loss', 'load_model']
+                   'shuffle', 'print_loss', 'load_model', 'clip_grad']
 
     def __init__(self, model, input, target):
         # Set the model
@@ -29,7 +29,6 @@ class Trainer:
             batch=None,
             normalize=False,
             shuffle=True,
-            print_epoch=False,
             print_loss=True,
             load_model=False,
             clip_grad=None)
@@ -68,10 +67,7 @@ class Trainer:
 
         # start training
         for epoch in range(self.options_['epochs']):
-            if self.options_["print_epoch"]:
-                print("EPOCH: ", epoch)
-
-            for _, (batch_x, batch_y) in enumerate(loader):  # for each training step
+            for iter, (batch_x, batch_y) in enumerate(loader):  # for each training step
                 b_x = torch.autograd.Variable(batch_x, requires_grad=True)
                 b_y = torch.autograd.Variable(batch_y)
 
@@ -82,7 +78,8 @@ class Trainer:
                 loss = self.loss(prediction, b_y)
 
                 if self.options_["print_loss"]:
-                    print(loss)
+                    print("EPOCH: ", epoch, "ITER: ",
+                          iter, "LOSS: ", loss.item())
 
                 # clear gradients for next train
                 self.optimizer.zero_grad()
@@ -91,9 +88,9 @@ class Trainer:
                 loss.backward()
 
                 # Clip grad if requested
-                if self.options_["clip_gradient"] is not None:
+                if self.options_["clip_grad"] is not None:
                     torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(), self.options_["clip_gradient"])
+                        self.model.parameters(), self.options_["clip_grad"])
 
                 # apply gradients
                 self.optimizer.step()

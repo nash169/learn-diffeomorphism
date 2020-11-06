@@ -5,7 +5,6 @@ import torch.nn as nn
 import numpy as np
 
 from .kernel_machine import KernelMachine
-from time import time
 
 
 class CouplingLayer(nn.Module):

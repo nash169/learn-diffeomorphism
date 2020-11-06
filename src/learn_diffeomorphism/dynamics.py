@@ -4,13 +4,6 @@ import torch
 import torch.nn as nn
 
 from .diffeomorphism import Diffeomorphism
-from src.learn_diffeomorphism.utils import blk_matrix
-
-from time import time
-
-
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda" if use_cuda else "cpu")
 
 
 class Dynamics(nn.Module):
@@ -25,24 +18,17 @@ class Dynamics(nn.Module):
             dim, num_features, num_diff,  length)
 
     def forward(self, x):
-        m = x.size(0)
-        y = self.diffeomorphism_(x)
-
+        # Calculate attactor location in the linear space
         attractor = self.diffeomorphism_(self.attractor_)[0]
 
-        jac = torch.empty(m*self.dim_, self.dim_).to(device)
+        # Calculate diffeomorphism and jacobian
+        J, y = self.diffeomorphism_.jacobian(x)
 
-        for i in range(self.dim_):
-            grad = torch.autograd.grad(
-                y[:, i], x, grad_outputs=torch.ones_like(y[:, i]), retain_graph=True)[0]
-            jac[:, i] = grad.reshape(1, -1)
+        # Calculate minus gradient of the potential function in linear space
+        _, dy = self.potential(attractor - y)
 
-        jac = jac.reshape(m, self.dim_, self.dim_).permute(0, 2, 1)
+        # Return DS in the original space
+        return torch.bmm(torch.inverse(J), dy.unsqueeze(2)).squeeze()
 
-        result = torch.empty(m, self.dim_).to(device)
-
-        for i in range(m):
-            result[i, :] = -torch.mv(torch.inverse(torch.mm(jac[i].transpose(
-                1, 0), jac[i])), y[i, :]-attractor)
-
-        return result
+    def potential(self, y):
+        return torch.bmm(y.unsqueeze(1), y.unsqueeze(2)), y
