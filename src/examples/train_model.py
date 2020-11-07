@@ -14,9 +14,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--data', type=str, default='Leaf_2_ref',
                     help='Name of the dataset/model')
 
-parser.add_argument('--model', type=bool, default=True,
-                    help='Load pre-trained model')
-
 args = parser.parse_args()
 
 # CPU/GPU setting
@@ -51,11 +48,8 @@ trainer.optimizer = torch.optim.Adam(
 trainer.loss = torch.nn.SmoothL1Loss()
 
 # Set trainer options
-trainer.options(normalize=False, shuffle=True, print_loss=True, epochs=1000)
-
-# Load model
-if args.model:
-    trainer.load(args.data)
+trainer.options(normalize=False, shuffle=True, print_loss=True,
+                epochs=1000, load_model=args.data)
 
 # Train model
 trainer.train()
