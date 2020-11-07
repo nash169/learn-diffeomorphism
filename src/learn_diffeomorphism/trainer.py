@@ -4,7 +4,7 @@ import os
 
 class Trainer:
     __options__ = ['epochs', 'batch', 'normalize',
-                   'shuffle', 'print_loss', 'load_model', 'clip_grad']
+                   'shuffle', 'print_loss', 'clip_grad']
 
     def __init__(self, model, input, target):
         # Set the model
@@ -30,7 +30,6 @@ class Trainer:
             normalize=False,
             shuffle=True,
             print_loss=True,
-            load_model=False,
             clip_grad=None)
 
     def options(self, **kwargs):
@@ -41,10 +40,6 @@ class Trainer:
                 print("Warning: option not found -", option)
 
     def train(self):
-        # Load model is requested
-        if self.options_['load_model']:
-            self.load()
-
         # Set batch to dataset size as default
         if self.options_['batch'] is None:
             self.options_['batch'] = self.input.size(0)
@@ -95,13 +90,13 @@ class Trainer:
                 # apply gradients
                 self.optimizer.step()
 
-    def save(self):
+    def save(self, file="learned_model"):
         torch.save(self.model.state_dict(), os.path.join(
-            'models', '{}.pt'.format("learned_model")))
+            'models', '{}.pt'.format(file)))
 
-    def load(self):
+    def load(self, file="learned_model"):
         self.model.load_state_dict(torch.load(
-            os.path.join('models', '{}.pt'.format("learned_model"))))
+            os.path.join('models', '{}.pt'.format(file))))
 
     # Model
     @property

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import torch
 import numpy as np
 import os
@@ -7,12 +8,21 @@ import matplotlib.pyplot as plt
 
 from src.learn_diffeomorphism import *
 
+# Parse arguments
+parser = argparse.ArgumentParser(
+    description='Diffeomorphic mapping for learning Dynamical System')
+
+parser.add_argument('--data', type=str, default='Leaf_2_ref',
+                    help='Name of the dataset/model')
+
+args = parser.parse_args()
+
 # CPU/GPU setting
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 # Load data
-data = np.loadtxt("data/Leaf_2_ref.csv")
+data = np.loadtxt("data/"+args.data+".csv")
 pos = data[:, 0:2]
 vel = data[:, 2:4]
 pos = torch.from_numpy(pos).float().to(device)
@@ -30,7 +40,7 @@ net = Dynamics(dim, fourier_features, coupling_layers,
 
 # Load params
 net.load_state_dict(torch.load(os.path.join(
-    'models', '{}.pt'.format("learned_model"))))
+    'models', '{}.pt'.format(args.data))))
 
 # Meshgrid for test points
 resolution = 100
