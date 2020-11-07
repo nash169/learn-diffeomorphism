@@ -6,6 +6,7 @@ import numpy as np
 import os
 
 from src.learn_diffeomorphism import *
+from src.learn_diffeomorphism.utils import linear_map
 
 # Parse arguments
 parser = argparse.ArgumentParser(
@@ -24,6 +25,15 @@ device = torch.device("cuda" if use_cuda else "cpu")
 data = np.loadtxt(os.path.join('data', '{}.csv'.format(args.data)))
 pos = data[:, 0:2]
 vel = data[:, 2:4]
+
+# Normalization
+lower, upper = -0.5, 0.5
+pos[:, 0] = linear_map(pos[:, 0], np.min(pos[:, 0]),
+                       np.max(pos[:, 0]), lower, upper)
+pos[:, 1] = linear_map(pos[:, 1], np.min(pos[:, 1]),
+                       np.max(pos[:, 1]), lower, upper)
+
+# Convert to torch tensor
 pos = torch.from_numpy(pos).float().to(device)
 vel = torch.from_numpy(vel).float().to(device)
 
@@ -42,7 +52,7 @@ trainer = Trainer(net, pos, vel)
 
 # Set trainer optimizer (this is not very clean)
 trainer.optimizer = torch.optim.Adam(
-    trainer.model.parameters(), lr=1e-4,  weight_decay=1e-10)
+    trainer.model.parameters(), lr=1e-4,  weight_decay=1e-8)
 
 # Set trainer loss
 trainer.loss = torch.nn.SmoothL1Loss()
