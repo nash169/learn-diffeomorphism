@@ -3,6 +3,7 @@
 import argparse
 import torch
 import numpy as np
+import os
 
 from src.learn_diffeomorphism import *
 
@@ -13,7 +14,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--data', type=str, default='Leaf_2_ref',
                     help='Name of the dataset/model')
 
-parser.add_argument('--model', type=bool, default=False,
+parser.add_argument('--model', type=bool, default=True,
                     help='Load pre-trained model')
 
 args = parser.parse_args()
@@ -23,7 +24,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 # Load data
-data = np.loadtxt("data/"+args.data+".csv")
+data = np.loadtxt(os.path.join('data', '{}.csv'.format(args.data)))
 pos = data[:, 0:2]
 vel = data[:, 2:4]
 pos = torch.from_numpy(pos).float().to(device)
@@ -50,7 +51,7 @@ trainer.optimizer = torch.optim.Adam(
 trainer.loss = torch.nn.SmoothL1Loss()
 
 # Set trainer options
-trainer.options(normalize=False, shuffle=True, print_loss=True, epochs=10)
+trainer.options(normalize=False, shuffle=True, print_loss=True, epochs=1000)
 
 # Load model
 if args.model:
