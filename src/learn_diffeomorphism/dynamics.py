@@ -18,17 +18,20 @@ class Dynamics(nn.Module):
             dim, num_features, num_diff,  length)
 
     def forward(self, x):
-        # Calculate attactor location in the linear space
-        attractor = self.diffeomorphism_(self.attractor_)[0]
-
         # Calculate diffeomorphism and jacobian
         J, y = self.diffeomorphism_.jacobian(x)
 
         # Calculate minus gradient of the potential function in linear space
-        _, dy = self.potential(attractor - y)
+        _, dy = self.potential(y)
 
         # Return DS in the original space
-        return torch.bmm(torch.inverse(J), dy.unsqueeze(2)).squeeze()
+        return torch.bmm(torch.inverse(J), -dy.unsqueeze(2)).squeeze()
 
     def potential(self, y):
-        return torch.bmm(y.unsqueeze(1), y.unsqueeze(2)), y
+        # Calculate attactor location in the linear space
+        attractor = self.diffeomorphism_(self.attractor_)[0]
+
+        # Centered poisition
+        y_hat = y - attractor
+
+        return torch.bmm(y_hat.unsqueeze(1), y_hat.unsqueeze(2)), y_hat

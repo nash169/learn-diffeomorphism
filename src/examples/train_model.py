@@ -38,7 +38,7 @@ trainer.loss = torch.nn.SmoothL1Loss()
 
 # Set trainer options
 trainer.options(normalize=False, shuffle=True,
-                print_loss=True, epochs=500, load_model=False)
+                print_loss=True, epochs=1000, load_model=True)
 
 # Train model
 trainer.train()
