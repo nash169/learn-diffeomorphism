@@ -25,7 +25,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 # Load data
-data = np.loadtxt(os.path.join('data', '{}.csv'.format(args.data)))
+data = np.loadtxt(os.path.join('rsc', '{}.csv'.format(args.data)))
 pos_train = data[:, 0:2]
 vel = data[:, 2:4]
 

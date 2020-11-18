@@ -22,7 +22,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 # Load data
-data = np.loadtxt(os.path.join('data', '{}.csv'.format(args.data)))
+data = np.loadtxt(os.path.join('rsc', '{}.csv'.format(args.data)))
 pos = data[:, 0:2]
 vel = data[:, 2:4]
 
@@ -59,7 +59,7 @@ trainer.loss = torch.nn.SmoothL1Loss()
 
 # Set trainer options
 trainer.options(normalize=False, shuffle=True, print_loss=True,
-                epochs=1000, load_model=args.data)
+                epochs=1000, load_model=None)
 
 # Train model
 trainer.train()
