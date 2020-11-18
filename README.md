@@ -19,3 +19,13 @@ python(python3) -m src.examples.test_model --data <dataset_name>
 (ipython) run src/examples/test_model.py --data <dataset_name>
 ```
 where the line command **data** can be used load the model/dataset.
+
+### Install the package
+In order to install the package in `.local` run
+```sh
+pip(pip3) install src/
+```
+For local installation in the current directory
+```sh
+pip(pip3) install -e src/
+```
