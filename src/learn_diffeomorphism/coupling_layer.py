@@ -6,9 +6,6 @@ import numpy as np
 
 from .kernel_machine import KernelMachine
 
-use_cuda = torch.cuda.is_available()
-device = torch.device("cuda" if use_cuda else "cpu")
-
 
 class CouplingLayer(nn.Module):
     def __init__(self, dim, num_features, transf_index, length=1):
@@ -40,13 +37,10 @@ class CouplingLayer(nn.Module):
             self.inx_zb = inx_even
 
     def forward(self, x):
-        z_a = x[:, self.inx_za]
-        z_b = x[:, self.inx_zb]
+        result = x.clone()
 
-        z_b = z_b*torch.exp(self.scaling_(z_a)) + self.translation_(z_a)
-
-        result = torch.empty(z_b.size(0), self.dim_).to(device)
-        result[:, self.inx_za] = z_a
-        result[:, self.inx_zb] = z_b
+        result[:, self.inx_zb] = x[:, self.inx_zb] * \
+            torch.exp(self.scaling_(x[:, self.inx_za])) + \
+            self.translation_(x[:, self.inx_za])
 
         return result
