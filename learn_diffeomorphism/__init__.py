@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from .coupling_layer import CouplingLayer
 from .diffeomorphism import Diffeomorphism
 from .dynamics import Dynamics

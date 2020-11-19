@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import torch
 import os
 
@@ -96,6 +98,9 @@ class Trainer:
                 self.optimizer.step()
 
     def save(self, file):
+        if not os.path.exists('models'):
+            os.makedirs('models')
+
         torch.save(self.model.state_dict(), os.path.join(
             'models', '{}.pt'.format(file)))
 

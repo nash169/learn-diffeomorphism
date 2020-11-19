@@ -1,17 +1,18 @@
-import setuptools
-# import os
+#!/usr/bin/env python
 
-# with open(os.path.join(os.getcwd(), "../README.md"), "r") as fh:
-#     long_description = fh.read()
+import setuptools
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setuptools.setup(
-    name="learn-diffeomorphism",  # Replace with your own username
+    name="learn-diffeomorphism",
     version="1.0.0",
     author="Bernardo Fichera",
     author_email="bernardo.fichera@gmail.com",
     description="NVP network for diffeomorphism learning",
-    # long_description=long_description,
-    # long_description_content_type="text/markdown",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/nash169/learn-diffeomorphism.git",
     packages=setuptools.find_packages(),
     classifiers=[
@@ -21,17 +22,17 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
-        "numpy",                # math library
-        "matplotlib",           # plotting library
+        "numpy",                # math
+        "matplotlib",           # plotting
+        "torch",                # net framework
     ],
     extras_require={
         "pytorch": [
-            "torch",            # deep learning
-            "torchvision",      # additional utilities
+            "torchvision",      # net framework GPU
             "tensorboard"       # visualizations
         ],
         "dev": [
-            "pylint",           # code quality tool
+            "pylint",           # python linter
         ]
     },
 )

@@ -7,8 +7,8 @@ import os
 import matplotlib.pyplot as plt
 
 from mpl_toolkits.mplot3d import Axes3D
-from src.learn_diffeomorphism import *
-from src.learn_diffeomorphism.utils import linear_map
+from learn_diffeomorphism import Dynamics
+from learn_diffeomorphism.utils import linear_map
 
 
 # Parse arguments
@@ -25,7 +25,7 @@ use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
 # Load data
-data = np.loadtxt(os.path.join('rsc', '{}.csv'.format(args.data)))
+data = np.loadtxt(os.path.join('data', '{}.csv'.format(args.data)))
 pos_train = data[:, 0:2]
 vel = data[:, 2:4]
 
@@ -66,7 +66,7 @@ dx = vel_test[:, 0].reshape(resolution, -1, order="F")
 dy = vel_test[:, 1].reshape(resolution, -1, order="F")
 
 # Diffeomorphism
-psi = net.diffeomorphism_(pos_test_tensor)
+psi = net.diffeomorphism(pos_test_tensor)
 
 # Potential function
 phi, _ = net.potential(psi)
