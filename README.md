@@ -10,10 +10,10 @@ Pytorch-based implementation of the paper: https://arxiv.org/abs/2005.13143
 ### Run examples
 In order to train a model
 ```sh
-python(python3) -m examples.train_model --data <dataset_name> --model=<true|false>
-(ipython) run examples/train_model.py --data <dataset_name>  --model=<true|false>
+python(python3) -m examples.train_model --data <dataset_name>
+(ipython) run examples/train_model.py --data <dataset_name>
 ```
-where the line commands **data** can be used to set the training dataset and **model** to load a pre-trained model. In oder to test a trained model
+where the line commands **data** can be used to set the training dataset. In oder to test a trained model
 ```sh
 python(python3) -m examples.test_model --data <dataset_name>
 (ipython) run examples/test_model.py --data <dataset_name>
