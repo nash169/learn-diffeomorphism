@@ -44,3 +44,11 @@ class CouplingLayer(nn.Module):
             self.translation_(x[:, self.inx_za])
 
         return result
+
+    def invert(self, x):
+        result = x.clone()
+
+        result[:, self.inx_zb] = (x[:, self.inx_zb] - self.translation_(
+            x[:, self.inx_za]))*torch.exp(-self.scaling_(x[:, self.inx_za]))
+
+        return result

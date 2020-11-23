@@ -28,3 +28,9 @@ class Diffeomorphism(nn.Module):
             jac[:, i] = grad.reshape(1, -1)
 
         return jac.reshape(-1, self.dim_, self.dim_).permute(0, 2, 1), y
+
+    def invert(self, x):
+        for m in reversed(self.prediction_):
+            x = m.invert(x)
+
+        return x
