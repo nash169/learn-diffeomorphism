@@ -15,8 +15,7 @@ from learn_diffeomorphism.utils import linear_map
 parser = argparse.ArgumentParser(
     description='Diffeomorphic mapping for learning Dynamical System')
 
-parser.add_argument('--data', type=str, default='Leaf_2_ref',
-                    help='Name of the dataset/model')
+parser.add_argument('--data', type=str, default='Leaf_2',  help='Name of the dataset/model')
 
 args = parser.parse_args()
 
