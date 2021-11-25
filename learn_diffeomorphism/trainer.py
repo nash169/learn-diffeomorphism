@@ -2,11 +2,12 @@
 
 import torch
 import os
+import numpy as np
 
 
 class Trainer:
     __options__ = ['epochs', 'batch', 'normalize',
-                   'shuffle', 'print_loss', 'clip_grad', 'load_model']
+                   'shuffle', 'record_loss', 'print_loss', 'clip_grad', 'load_model']
 
     def __init__(self, model, input, target):
         # Set the model
@@ -31,6 +32,7 @@ class Trainer:
             batch=None,
             normalize=False,
             shuffle=True,
+            record_loss=False,
             print_loss=True,
             clip_grad=None,
             load_model=None)
@@ -67,6 +69,10 @@ class Trainer:
             num_workers=0
         )
 
+        # Open file
+        if self.options_["record_loss"]:
+            loss_log = np.empty([1,3])
+
         # start training
         for epoch in range(self.options_['epochs']):
             for iter, (batch_x, batch_y) in enumerate(loader):  # for each training step
@@ -79,10 +85,16 @@ class Trainer:
                 # must be (1. nn output, 2. target)
                 loss = self.loss(prediction, b_y)
 
+                # Print loss
                 if self.options_["print_loss"]:
                     print("EPOCH: ", epoch, "ITER: ",
                           iter, "LOSS: ", loss.item())
-
+                
+                # Record loss (EPOCH,ITER,LOSS)
+                if self.options_["record_loss"]:
+                    # print(np.array([epoch,iter,loss.item()])[:,np.newaxis])
+                    loss_log = np.append(loss_log,np.array([epoch,iter,loss.item()])[np.newaxis,:],axis=0)
+                    
                 # clear gradients for next train
                 self.optimizer.zero_grad()
 
@@ -96,6 +108,13 @@ class Trainer:
 
                 # apply gradients
                 self.optimizer.step()
+
+        # Close file
+        if self.options_["record_loss"]:
+            if not os.path.exists('models'):
+                os.makedirs('models')
+
+            np.savetxt(os.path.join('models', '{}.csv'.format(self.options_["record_loss"])), loss_log)
 
     def save(self, file):
         if not os.path.exists('models'):
